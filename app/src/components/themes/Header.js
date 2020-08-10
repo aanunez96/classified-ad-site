@@ -14,6 +14,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import {withStyles} from '@material-ui/core/styles';
+import {accountsClient} from '../../utils/accounts-js';
+import { useHistory} from "react-router-dom";
+
+
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -40,7 +44,22 @@ const styles = theme => ({
 });
 
 function Header(props) {
+    const history = useHistory();
     const {classes, onDrawerToggle} = props;
+
+    const [redirect, setRedirect] = React.useState(false);
+    const logout = async ()=>{
+        try {
+           await accountsClient.logout();
+           setRedirect(true);
+        }catch (e) {
+            console.log(e);
+        }
+    };
+    if(redirect){
+        setRedirect(false);
+        history.push('/');
+    }
 
     return (
         <React.Fragment>
@@ -95,7 +114,7 @@ function Header(props) {
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Button className={classes.button} variant="outlined" color="inherit" size="small">
+                            <Button className={classes.button} variant="outlined" color="inherit" size="small" onClick={logout}>
                                 Web setup
                             </Button>
                         </Grid>

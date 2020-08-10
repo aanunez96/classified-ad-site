@@ -1,10 +1,11 @@
 import React from 'react';
-import {useQuery} from '@apollo/react-hooks';
-import {gql} from 'apollo-boost';
+// import {useQuery} from '@apollo/react-hooks';
+// import {gql} from 'apollo-boost';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
+    Redirect,
 } from "react-router-dom";
 import Home from './components/Home';
 import Header from './components/themes/Header';
@@ -20,6 +21,8 @@ import AdList from './components/ad/AdsList';
 import CreateAd from './components/ad/CreateAd';
 import EditProfile from './components/user/EditProfile';
 import Profile from './components/user/Profile';
+import {accountsClient} from './utils/accounts-js';
+
 
 let theme = createMuiTheme({
     palette: {
@@ -176,23 +179,58 @@ function Copyright() {
     );
 }
 
-const ad = gql`
-{
-  ad{
-    description
-  }
-}
-`;
-
+// const ad = gql`
+// {
+//   getUser{
+//     id
+//   }
+// }
+// `;
 
 function App(props) {
     const {classes} = props;
-    const {data} = useQuery(ad);
+    // const {data} = useQuery(ad);
+    const [comprovateLogin, setComprovateLogin] = React.useState(false);
+    const [user,setUser] = React.useState(null);
+    if(!comprovateLogin){
+        try{
+            accountsClient.getUser().then(e => {
+                setUser(e);
+                setComprovateLogin(true);
+            });
+        }catch (e) {
+            console.log(e);
+        }
+    }
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
-    console.log(data);
+
+    console.log(user);
+
+    function PrivateRoute({ children, ...rest }) {
+        return (
+            <Route
+                {...rest}
+                render={({ location }) =>
+                    comprovateLogin  ?
+                    user ? (
+                        children
+                    ) : (
+                        <Redirect
+                            to={{
+                                pathname: "/login",
+                                state: { from: location }
+                            }}
+                        />
+                    ) : (
+                            <div></div>
+                        )
+                }
+            />
+        );
+    }
 
     return (
         <Router>
@@ -209,15 +247,15 @@ function App(props) {
                         <Route exact path="/ad-list">
                             <AdList/>
                         </Route>
-                        <Route exact path="/create-ad">
+                        <PrivateRoute exact path="/create-ad">
                             <CreateAd/>
-                        </Route>
+                        </PrivateRoute>
                         <Route exact path="/profile">
                             <Profile/>
                         </Route>
-                        <Route exact path="/edit-profile">
+                        <PrivateRoute exact path="/edit-profile">
                             <EditProfile/>
-                        </Route>
+                        </PrivateRoute>
                         <Route exact path="/login">
                             <SingIn/>
                         </Route>
