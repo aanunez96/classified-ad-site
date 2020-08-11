@@ -1,7 +1,7 @@
 import apolloClient from './apollo-client';
 import { AccountsClient } from '@accounts/client';
 import GraphQLClient from '@accounts/graphql-client';
-import {gql} from 'apollo-boost';
+import {gql} from '@apollo/client';
 
 
 const accountsGraphQL = new GraphQLClient({

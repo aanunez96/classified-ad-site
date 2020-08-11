@@ -7,20 +7,20 @@ import {
     Route,
     Redirect,
 } from "react-router-dom";
-import Home from './components/Home';
+import Home from './screens/Home';
 import Header from './components/themes/Header';
-import SingUp from './components/login/SignUp';
-import SingIn from './components/login/SignIn';
+import SingUp from './screens/authentication/SignUp';
+import SingIn from './screens/authentication/SignIn';
 import {withStyles, createMuiTheme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import Ad from './components/ad/Ad';
-import AdList from './components/ad/AdsList';
-import CreateAd from './components/ad/CreateAd';
-import EditProfile from './components/user/EditProfile';
-import Profile from './components/user/Profile';
+import Ad from './screens/ad/Ad';
+import Category from './screens/ad/Category';
+import CreateAd from './screens/ad/CreateAd';
+import EditProfile from './screens/user/EditProfile';
+import Profile from './screens/user/Profile';
 import {accountsClient} from './utils/accounts-js';
 
 
@@ -241,11 +241,11 @@ function App(props) {
                         <Route exact path="/">
                             <Home/>
                         </Route>
-                        <Route exact path="/ad">
+                        <Route exact path="/ad/:adId">
                             <Ad/>
                         </Route>
-                        <Route exact path="/ad-list">
-                            <AdList/>
+                        <Route exact path="/category">
+                            <Category/>
                         </Route>
                         <PrivateRoute exact path="/create-ad">
                             <CreateAd/>
