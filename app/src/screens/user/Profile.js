@@ -1,36 +1,53 @@
 import Container from "@material-ui/core/Container";
 import React from "react";
 import AdsList from "../../components/ad/AdsList";
-import UserDetails from "../../components/user/UserDetails"
+import UserDetails from "../../components/user/UserDetails";
+import {useParams} from "react-router-dom";
+import {gql, useQuery} from "@apollo/client";
+import LinearProgress from "@material-ui/core/LinearProgress/LinearProgress";
+import Typography from "@material-ui/core/Typography";
 
-const user = {
-    avatar: '/static/images/avatars/avatar_6.png',
-    city: 'Los Angeles',
-    country: 'USA',
-    jobTitle: 'Senior Developer',
-    name: 'Katarina Smith',
-    timezone: 'GTM-7'
-};
-
-const ad = {
-    tittle: "fori",
-    owner: {name: "yo mismo", adress: "excateplaca@esta.talla"},
-    description: "esto es una talla sana pero te deja un arrebato increible",
-    classification: "blum",
-    price: 200,
-    date: new Date(),
-};
-export const related = [ad, ad, ad, ad];
-
+const GET_DATA = gql`
+query AD(
+  $userId:ID!
+){
+  user(userId:$userId){
+    profile{
+      name
+      lastName
+      avatar
+      number
+    }
+    emails{
+      address
+    }
+  }
+  ads(userId:$userId){
+    tittle
+    price
+    classification
+    description
+  }
+}`;
 
 
 export default function Profile() {
+    const {userId} = useParams();
+    const {loading, data} = useQuery(GET_DATA, {variables: {userId}});
 
     return (
-        <Container component="main" maxWidth="lg">
-            <UserDetails user={user}/>
-            <br/>
-            <AdsList data={related} tittle={"Published"}/>
-        </Container>
+        (loading) ?
+            <LinearProgress/>
+            :
+            (data) ?
+                <Container component="main" maxWidth="lg">
+                    <UserDetails user={data.user}/>
+                    <br/>
+                    <AdsList data={data.ads} tittle={"Published"}/>
+                </Container>
+                :
+                <Typography color="textSecondary" align="center">
+                    No users for this project yet
+                </Typography>
     );
 }

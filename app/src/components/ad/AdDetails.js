@@ -38,10 +38,10 @@ export default function AdDetail(props) {
             </Grid>
             <Grid item xs={4}>
                 <Typography variant="h5" gutterBottom>
-                    {data.ad.tittle}
+                    {data.tittle}
                 </Typography>
                 <br/>
-                <ColorButton size="large" variant="outlined">{`${data.ad.price} $`}</ColorButton>
+                <ColorButton size="large" variant="outlined">{`${data.price} $`}</ColorButton>
                 <br/>
                 <Box
                     alignItems="center"
@@ -51,11 +51,11 @@ export default function AdDetail(props) {
                         N
                     </Avatar>
                     <Typography variant="h8" gutterBottom>
-                        {`${data.ad.owner.profile.name} ${data.ad.owner.profile.lastName}`}
+                        {`${data.owner.profile.name} ${data.owner.profile.lastName}`}
                     </Typography>
                     <br/>
                     <Typography variant="h9" color="textSecondary">
-                        {data.ad.owner.emails.address}
+                        {data.owner.emails.address}
                     </Typography>
                 </Box>
                 <br/>
@@ -63,11 +63,11 @@ export default function AdDetail(props) {
                     <Typography variant="h5" color="textSecondary">
                         description
                     </Typography>
-                    <Button size="small">{`${data.ad.classification} $`}</Button>
+                    <Button size="small">{`${data.classification} $`}</Button>
                 </div>
                 <br/>
                 <Typography component="p">
-                    {data.ad.description}
+                    {data.description}
                 </Typography>
 
             </Grid>

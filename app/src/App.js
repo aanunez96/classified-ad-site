@@ -1,6 +1,4 @@
 import React from 'react';
-// import {useQuery} from '@apollo/react-hooks';
-// import {gql} from 'apollo-boost';
 import {
     BrowserRouter as Router,
     Switch,
@@ -179,24 +177,15 @@ function Copyright() {
     );
 }
 
-// const ad = gql`
-// {
-//   getUser{
-//     id
-//   }
-// }
-// `;
-
 function App(props) {
     const {classes} = props;
-    // const {data} = useQuery(ad);
-    const [comprovateLogin, setComprovateLogin] = React.useState(false);
+    const [checkLogin, setCheckLogin] = React.useState(false);
     const [user,setUser] = React.useState(null);
-    if(!comprovateLogin){
+    if(!checkLogin){
         try{
             accountsClient.getUser().then(e => {
                 setUser(e);
-                setComprovateLogin(true);
+                setCheckLogin(true);
             });
         }catch (e) {
             console.log(e);
@@ -214,7 +203,7 @@ function App(props) {
             <Route
                 {...rest}
                 render={({ location }) =>
-                    comprovateLogin  ?
+                    checkLogin  ?
                     user ? (
                         children
                     ) : (
@@ -241,20 +230,20 @@ function App(props) {
                         <Route exact path="/">
                             <Home/>
                         </Route>
-                        <Route exact path="/ad/:adId">
+                        <Route exact path="/ad/:category/:adId">
                             <Ad/>
                         </Route>
-                        <Route exact path="/category">
+                        <Route exact path="/category/:category">
                             <Category/>
                         </Route>
                         <PrivateRoute exact path="/create-ad">
                             <CreateAd/>
                         </PrivateRoute>
-                        <Route exact path="/profile">
+                        <Route exact path="/profile/:userId">
                             <Profile/>
                         </Route>
-                        <PrivateRoute exact path="/edit-profile">
-                            <EditProfile/>
+                        <PrivateRoute exact path="/edit-profile/">
+                            <EditProfile user={user}/>
                         </PrivateRoute>
                         <Route exact path="/login">
                             <SingIn/>

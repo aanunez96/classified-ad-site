@@ -14,7 +14,9 @@ const user = {
 };
 
 
-export default function EditProfile() {
+export default function EditProfile(props) {
+    const {user} = props;
+    console.log(user);
 
     return (
         <Container component="main" maxWidth="md">

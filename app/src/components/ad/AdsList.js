@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
 export default function AdsList(props) {
     const classes = useStyles();
     const {tittle, data} = props;

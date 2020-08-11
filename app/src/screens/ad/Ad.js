@@ -7,18 +7,10 @@ import {useParams} from "react-router-dom";
 import AdDetails from '../../components/ad/AdDetails';
 import AdsList from '../../components/ad/AdsList';
 
-const ad = {
-    tittle: "fori",
-    owner: {name: "yo mismo", adress: "excateplaca@esta.talla"},
-    description: "esto es una talla sana pero te deja un arrebato increible",
-    classification: "blum",
-    price: 200,
-    date: new Date(),
-};
-export const related = [ad, ad, ad, ad];
 const GET_AD = gql`
 query AD(
   $adId:ID!
+  $category: Category!
 ){
   ad(adId:$adId){
     _id
@@ -39,11 +31,19 @@ query AD(
       }
     }
   }
+  ads(classification:$category){
+    tittle
+    price
+    classification
+    description
+  }
 }`;
 
+
 export default function Ad() {
-    const {adId} = useParams();
-    const {loading, data} = useQuery(GET_AD, {variables: {adId}});
+    const {adId, category} = useParams();
+    const {loading, data} = useQuery(GET_AD, {variables: {adId,category}});
+
 
     return (
         <Container component="main" maxWidth="lg">
@@ -52,8 +52,8 @@ export default function Ad() {
                 :
                 (data?.ad) ?
                     <>
-                    <AdDetails data={data}/>
-                    <AdsList data={related} tittle={"Related Ads"}/>
+                    <AdDetails data={data.ad}/>
+                    <AdsList data={data.ads} tittle={"Related Ads"}/>
                     </>
                     :
                     <Typography color="textSecondary" align="center">

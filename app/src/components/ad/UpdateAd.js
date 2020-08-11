@@ -4,12 +4,10 @@ import React, {useState} from "react";
 export default function UpdateAd(props) {
     const {user} = props;
     const [values, setValues] = useState({
-        firstName: 'Katarina',
-        lastName: 'Smith',
-        email: 'demo@devias.io',
-        phone: '',
-        state: 'Alabama',
-        country: 'USA'
+        firstName: user.profile.name,
+        lastName: user.profile.lastName,
+        email: user.owner.emails.address,
+        phone: user.profile.number,
     });
 
     const handleChange = (event) => {
