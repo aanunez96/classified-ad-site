@@ -2,6 +2,8 @@ import {Avatar, Box, Button, Card, CardActions, CardContent, Divider, Grid} from
 import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 
+const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
+
 const useStyles = makeStyles(() => ({
     root: {},
     avatar: {
@@ -10,8 +12,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export default function UpdatePicture(props) {
-    const {picture} = props;
+export default function UpdatePicture() {
     const classes = useStyles();
 
     return (
@@ -31,7 +32,7 @@ export default function UpdatePicture(props) {
                     >
                         <Avatar
                             className={classes.avatar}
-                            src={picture}
+                            src={image}
                             variant="square"
                         />
                     </Box>

@@ -1,6 +1,7 @@
 import {Avatar, Box, Typography} from "@material-ui/core";
 import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
+const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -25,7 +26,7 @@ export default function Profile(props) {
         >
             <Avatar
                 className={classes.avatar}
-                src={user.avatar}
+                src={image}
             />
             <Box
                 alignItems="left"
@@ -33,28 +34,21 @@ export default function Profile(props) {
                 flexDirection="column"
             >
                 <Typography variant="h4" gutterBottom >
-                    Category
+                    {`${user.profile.name} ${user.profile.lastName}`}
                 </Typography>
                 <Typography
                     color="textSecondary"
                     variant="body2"
                     className={classes.text}
                 >
-                    {`${user.city} ${user.country}`}
+                    {user.emails[0].address}
                 </Typography>
                 <Typography
                     color="textSecondary"
                     variant="body2"
                     className={classes.text}
                 >
-                    {`${user.city} ${user.country}`}
-                </Typography>
-                <Typography
-                    color="textSecondary"
-                    variant="body2"
-                    className={classes.text}
-                >
-                    {`${user.city} ${user.country}`}
+                    {user.profile.number}
                 </Typography>
             </Box>
         </Box>

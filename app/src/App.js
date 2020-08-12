@@ -6,7 +6,7 @@ import {
     Redirect,
 } from "react-router-dom";
 import Home from './screens/Home';
-import Header from './components/themes/Header';
+import Header from './components/themes/Header2';
 import SingUp from './screens/authentication/SignUp';
 import SingIn from './screens/authentication/SignIn';
 import {withStyles, createMuiTheme} from '@material-ui/core/styles';
@@ -191,12 +191,6 @@ function App(props) {
             console.log(e);
         }
     }
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
-
-    console.log(user);
 
     function PrivateRoute({ children, ...rest }) {
         return (
@@ -224,7 +218,7 @@ function App(props) {
     return (
         <Router>
             <div className={classes.app}>
-                <Header onDrawerToggle={handleDrawerToggle}/>
+                <Header user={user}/>
                 <main className={classes.main}>
                     <Switch>
                         <Route exact path="/">
@@ -236,13 +230,16 @@ function App(props) {
                         <Route exact path="/category/:category">
                             <Category/>
                         </Route>
-                        <PrivateRoute exact path="/create-ad">
+                        <PrivateRoute exact path="/create-ad/">
+                            <CreateAd/>
+                        </PrivateRoute>
+                        <PrivateRoute exact path="/edit-ad/:adId">
                             <CreateAd/>
                         </PrivateRoute>
                         <Route exact path="/profile/:userId">
                             <Profile/>
                         </Route>
-                        <PrivateRoute exact path="/edit-profile/">
+                        <PrivateRoute exact path="/edit-profile">
                             <EditProfile user={user}/>
                         </PrivateRoute>
                         <Route exact path="/login">
@@ -252,9 +249,6 @@ function App(props) {
                             <SingUp/>
                         </Route>
                     </Switch>
-                    <Fab aria-label="add" position="static" className={classes.button}>
-                        <AddIcon/>
-                    </Fab>
                 </main>
                 <footer className={classes.footer}>
                     <Copyright/>

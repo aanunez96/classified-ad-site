@@ -1,72 +1,93 @@
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import {Box, withStyles} from "@material-ui/core";
+import {Box} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import {green} from "@material-ui/core/colors";
+import {Link} from "react-router-dom";
 
+const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
 const useStyles = makeStyles((theme) => ({
-    grid: {
-        margin: theme.spacing(2)
+    margin: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+    },
+    price: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
     },
     rounded: {
         color: '#fff',
         backgroundColor: green[500],
-        margin: theme.spacing(2),
+        marginRight: theme.spacing(2),
+        height: "300",
     },
+    img: {
+        maxWidth: "400",
+        maxHeight: "400",
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+    }
+
 }));
 
-const ColorButton = withStyles((theme) => ({
-    root: {
-        color: theme.palette.getContrastText(green[500]),
-        backgroundColor: green[500],
-        '&:hover': {
-            backgroundColor: green[700],
-        },
-    },
-}))(Button);
 
 export default function AdDetail(props) {
     const classes = useStyles();
     const {data} = props;
+    console.log(data);
     return (
-        <Grid container spacing={3} className={classes.grid}>
+        <Grid container spacing={3} className={classes.margin}>
             <Grid item xs={8} >
-
+                <div height="200" display="flex" >
+                <img src={image}  className={classes.img} alt="ad-image" />
+                </div>
             </Grid>
             <Grid item xs={4}>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h6" gutterBottom>
                     {data.tittle}
                 </Typography>
                 <br/>
-                <ColorButton size="large" variant="outlined">{`${data.price} $`}</ColorButton>
+                <Button size="small" className={classes.price} variant="contained" disableElevation >{`${data.price} $`}</Button>
+
                 <br/>
                 <Box
                     alignItems="center"
                     display="flex"
+                    className={classes.margin}
+                    component={Link} to={`/profile/${data.owner._id}`}
                 >
-                    <Avatar variant="rounded" className={classes.rounded}>
-                        N
+                    <Avatar variant="rounded" className={classes.rounded} >
+                        <img src={image}  className={classes.img} alt="ad-image" />
                     </Avatar>
-                    <Typography variant="h8" gutterBottom>
+                    <Box
+                        alignItems="left"
+                        flexDirection="column"
+                    >
+                    <Typography variant="body1" >
                         {`${data.owner.profile.name} ${data.owner.profile.lastName}`}
                     </Typography>
-                    <br/>
-                    <Typography variant="h9" color="textSecondary">
-                        {data.owner.emails.address}
+                    <Typography variant="body2" color="textSecondary">
+                        {data.owner.emails[0].address}
                     </Typography>
+                    </Box>
                 </Box>
                 <br/>
-                <div>
-                    <Typography variant="h5" color="textSecondary">
-                        description
+                <Box
+                    alignItems="center"
+                    className={classes.margin}
+                >
+                    <Button size="small" variant="contained" component={Link} to={`/category/${data.classification}`}>
+                        {`${data.classification} $`}
+                    </Button>
+                    <Typography variant="h6" >
+                        Description
                     </Typography>
-                    <Button size="small">{`${data.classification} $`}</Button>
-                </div>
-                <br/>
-                <Typography component="p">
+                </Box>
+                <Typography component="p" color="textSecondary">
                     {data.description}
                 </Typography>
 

@@ -16,19 +16,6 @@ import {accountsClient} from '../../utils/accounts-js';
 import {useHistory, useLocation} from "react-router-dom";
 
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -107,10 +94,6 @@ export default function SignIn() {
                     id="password"
                     autoComplete="current-password"
                 />
-                <FormControlLabel
-                    control={<Checkbox value="remember" color="primary"/>}
-                    label="Remember me"
-                />
                 <Button
                     fullWidth
                     variant="contained"
@@ -120,12 +103,7 @@ export default function SignIn() {
                 >
                     Sign In
                 </Button>
-                <Grid container>
-                    <Grid item xs>
-                        <Link href="#" variant="body2">
-                            Forgot password?
-                        </Link>
-                    </Grid>
+                <Grid container justify="flex-end">
                     <Grid item>
                         <Link href="/sign-up" variant="body2">
                             {"Don't have an account? Sign Up"}
@@ -133,9 +111,6 @@ export default function SignIn() {
                     </Grid>
                 </Grid>
             </div>
-            <Box mt={8}>
-                <Copyright/>
-            </Box>
         </Container>
 
     );

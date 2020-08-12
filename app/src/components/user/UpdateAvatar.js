@@ -2,6 +2,7 @@ import {Avatar, Box, Button, Card, CardActions, CardContent, Divider, Grid, Typo
 import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import moment from 'moment';
+const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
 
 const useStyles = makeStyles(() => ({
     root: {},
@@ -32,27 +33,20 @@ export default function UpdatePicture(props) {
                     >
                         <Avatar
                             className={classes.avatar}
-                            src={user.avatar}
+                            src={image}
                         />
                         <Typography
                             color="textPrimary"
                             gutterBottom
                             variant="h3"
                         >
-                            {user.name}
+                            {user.profile.name}
                         </Typography>
                         <Typography
                             color="textSecondary"
                             variant="body1"
                         >
-                            {`${user.city} ${user.country}`}
-                        </Typography>
-                        <Typography
-                            className={classes.dateText}
-                            color="textSecondary"
-                            variant="body1"
-                        >
-                            {`${moment().format('hh:mm A')} ${user.timezone}`}
+                            {user.profile.lastName}
                         </Typography>
                     </Box>
                 </CardContent>

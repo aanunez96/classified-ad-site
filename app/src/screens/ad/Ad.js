@@ -20,6 +20,7 @@ query AD(
     price
     date
     owner{
+      _id
       profile{
         name
         lastName
@@ -32,6 +33,7 @@ query AD(
     }
   }
   ads(classification:$category){
+    _id
     tittle
     price
     classification

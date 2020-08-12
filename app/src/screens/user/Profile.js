@@ -23,6 +23,7 @@ query AD(
     }
   }
   ads(userId:$userId){
+    _id
     tittle
     price
     classification

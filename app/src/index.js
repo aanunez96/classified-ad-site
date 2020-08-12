@@ -6,7 +6,6 @@ import * as serviceWorker from './serviceWorker';
 import {ApolloProvider} from "@apollo/client";
 import client from "./utils/apollo-client";
 
- console.log(client);
 ReactDOM.render(
     <React.StrictMode>
         <ApolloProvider client={client}>

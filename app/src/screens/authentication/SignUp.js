@@ -7,7 +7,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
@@ -17,18 +16,6 @@ import {useHistory} from "react-router-dom";
 import {accountsClient} from "../../utils/accounts-js";
 
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -80,8 +67,6 @@ export default function SignUp() {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const create = () => {
-        console.log(email);
-
         createUser({
             variables: {
                 email,
@@ -166,12 +151,6 @@ export default function SignUp() {
                             autoComplete="current-password"
                         />
                     </Grid>
-                    <Grid item xs={12}>
-                        <FormControlLabel
-                            control={<Checkbox value="allowExtraEmails" color="primary"/>}
-                            label="I want to receive inspiration, marketing promotions and updates via email."
-                        />
-                    </Grid>
                 </Grid>
                 <Button
                     fullWidth
@@ -184,15 +163,12 @@ export default function SignUp() {
                 </Button>
                 <Grid container justify="flex-end">
                     <Grid item>
-                        <Link href="#" variant="body2">
+                        <Link href="/login" variant="body2">
                             Already have an account? Sign in
                         </Link>
                     </Grid>
                 </Grid>
             </div>
-            <Box mt={5}>
-                <Copyright/>
-            </Box>
         </Container>
     );
 }

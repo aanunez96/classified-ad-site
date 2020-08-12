@@ -11,6 +11,7 @@ query AD(
   $category: Category!
 ){
   ads(classification:$category){
+    _id
     tittle
     price
     classification
@@ -28,7 +29,7 @@ export default function Category() {
                 <LinearProgress/>
                 :
                 (data?.ads) ?
-                    <AdsList data={data.ads} tittle={category}/>
+                    <AdsList data={data.ads} tittle={category.charAt(0).toUpperCase() + category.slice(1)}/>
                     :
                     <Typography color="textSecondary" align="center">
                         No users for this project yet

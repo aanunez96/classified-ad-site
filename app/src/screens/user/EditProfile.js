@@ -4,16 +4,6 @@ import Container from "@material-ui/core/Container";
 import UpdateProfile from '../../components/user/UpdateProfile';
 import UpdateAvatar from '../../components/user/UpdateAvatar';
 
-const user = {
-    avatar: '/static/images/avatars/avatar_6.png',
-    city: 'Los Angeles',
-    country: 'USA',
-    jobTitle: 'Senior Developer',
-    name: 'Katarina Smith',
-    timezone: 'GTM-7'
-};
-
-
 export default function EditProfile(props) {
     const {user} = props;
     console.log(user);

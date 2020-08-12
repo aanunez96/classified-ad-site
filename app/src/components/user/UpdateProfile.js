@@ -1,30 +1,14 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
 import React, {useState} from "react";
 
-const states = [
-    {
-        value: 'alabama',
-        label: 'Alabama'
-    },
-    {
-        value: 'new-york',
-        label: 'New York'
-    },
-    {
-        value: 'san-francisco',
-        label: 'San Francisco'
-    }
-];
 
 export default function UpdateProfile(props) {
     const {user} = props;
     const [values, setValues] = useState({
-        firstName: 'Katarina',
-        lastName: 'Smith',
-        email: 'demo@devias.io',
-        phone: '',
-        state: 'Alabama',
-        country: 'USA'
+        firstName: user.profile.name,
+        lastName: user.profile.lastName,
+        email: user.emails[0].address,
+        phone: user.profile.number,
     });
 
     const handleChange = (event) => {
