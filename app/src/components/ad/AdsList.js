@@ -6,7 +6,7 @@ import CardAd from './CardAd';
 
 
 export default function AdsList(props) {
-    const {tittle, data} = props;
+    const {tittle, data, owner} = props;
 
     return (
         <>
@@ -17,7 +17,7 @@ export default function AdsList(props) {
                 {
                     data.map(e =>
                         <Grid item xs={3}>
-                            <CardAd data={e}/>
+                            <CardAd data={e} owner={(owner)?true:false}/>
                         </Grid>
                     )
                 }

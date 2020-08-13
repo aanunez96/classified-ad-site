@@ -43,7 +43,7 @@ const useStyles = makeStyles(() => ({
 export const GalaxyCardDemo = React.memo(function GalaxyCard(props) {
     const mediaStyles = useCoverCardMediaStyles({ bgPosition: 'top' });
     const styles = useStyles();
-    const {data} = props;
+    const {data, owner} = props;
     return (
             <Card className={styles.card}>
                 <CardMedia
@@ -58,7 +58,7 @@ export const GalaxyCardDemo = React.memo(function GalaxyCard(props) {
                         <InfoTitle>{data.tittle}</InfoTitle>
                         <InfoCaption>{`${data.description.substring(0, 20)} ...`}</InfoCaption>
                     </Info>
-                    <Link to={`/ad/${data.classification}/${data._id}`}> See Ad</Link>
+                    <Link to={(!owner)?`/ad/${data.classification}/${data._id}`:`/edit-ad/${data._id}`}>{(owner)? "Edit Ad" : "See Ad"}</Link>
                 </Box>
             </Card>
     );

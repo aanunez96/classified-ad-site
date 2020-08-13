@@ -4,8 +4,11 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
+import {gql, useMutation} from '@apollo/client';
+import {useHistory} from "react-router-dom";
 
+const categories = ['car', 'motorcycle', 'property', 'cycle', 'clothing', 'watch', 'gadget', 'mobile'];
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -16,22 +19,42 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
+const UPDATE_AD = gql`
+mutation updateAd(
+  $adId: ID!
+  $tittle: String
+  $description: String
+  $classification: Category
+  $price: Int
+){
+  modifyAd(
+    tittle: $tittle,
+    adId: $adId,
+    description: $description,
+    price: $price,
+    classification:$classification
+    ){
+    description
+    classification
+    price
+    tittle
+    _id
+    date
+  }
+}
+`;
+
 export default function UpdateAd(props) {
     const classes = useStyles();
+    const history = useHistory();
     const {ad} = props;
-    const [values, setValues] = useState({
-        tittle: (ad) ? ad : "",
-        price: (ad) ? ad : "",
-        category: (ad) ? ad : "",
-        description: (ad) ? ad : "",
-    });
-
-    const handleChange = (event) => {
-        setValues({
-            ...values,
-            [event.target.name]: event.target.value
-        });
-    };
+    const [tittle, setTittle] = useState((ad) ? ad.tittle : "");
+    const [price, setPrice] = useState((ad) ? ad.price : "");
+    const [classification, setClassification] = useState((ad) ? ad.classification : "");
+    const [description, setDescription] = useState((ad) ? ad.description : "");
+    const [updateAd, {data}] = useMutation(UPDATE_AD);
+    data?.modifyAd && history.push(`/ad/${data.modifyAd.classification}/${data.modifyAd._id}`);
 
     return (
         <Grid
@@ -63,9 +86,9 @@ export default function UpdateAd(props) {
                                     fullWidth
                                     label="Tittle"
                                     name="tittle"
-                                    onChange={handleChange}
+                                    onChange={e => setTittle(e.target.value)}
                                     required
-                                    value={values.tittle}
+                                    value={tittle}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -79,9 +102,9 @@ export default function UpdateAd(props) {
                                     label="Price"
                                     name="price"
                                     type="number"
-                                    onChange={handleChange}
+                                    onChange={e => setPrice(e.target.value)}
                                     required
-                                    value={values.price}
+                                    value={price}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -97,14 +120,17 @@ export default function UpdateAd(props) {
                                         labelId="select-outlined"
                                         name="category"
                                         required
-                                        value={values.category}
-                                        onChange={handleChange}
+                                        value={classification}
+                                        onChange={e => setClassification(e.target.value)}
                                         label="Category"
                                     >
                                         <MenuItem value="">
                                             <em>None</em>
                                         </MenuItem>
-                                        <MenuItem value={10}>Ten</MenuItem>
+                                        {categories.map(e =>
+                                            <MenuItem value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</MenuItem>
+                                        )}
+
                                         <MenuItem value={20}>Twenty</MenuItem>
                                         <MenuItem value={30}>Thirty</MenuItem>
                                     </Select>
@@ -118,9 +144,9 @@ export default function UpdateAd(props) {
                                     fullWidth
                                     label="Description"
                                     name="description"
-                                    onChange={handleChange}
+                                    onChange={e => setDescription(e.target.value)}
                                     multiline
-                                    value={values.description}
+                                    value={description}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -135,6 +161,7 @@ export default function UpdateAd(props) {
                         <Button
                             color="primary"
                             variant="contained"
+                            onClick={()=>updateAd({variables:{adId:ad._id,tittle,description,price,classification}})}
                         >
                             Save details
                         </Button>

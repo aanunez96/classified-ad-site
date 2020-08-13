@@ -12,13 +12,12 @@ import SingIn from './screens/authentication/SignIn';
 import {withStyles, createMuiTheme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import Ad from './screens/ad/Ad';
 import Category from './screens/ad/Category';
 import CreateAd from './screens/ad/CreateAd';
 import EditProfile from './screens/user/EditProfile';
 import Profile from './screens/user/Profile';
+import UpdateAdView from './screens/ad/UpdateAdView';
 import {accountsClient} from './utils/accounts-js';
 
 
@@ -234,7 +233,7 @@ function App(props) {
                             <CreateAd/>
                         </PrivateRoute>
                         <PrivateRoute exact path="/edit-ad/:adId">
-                            <CreateAd/>
+                            <UpdateAdView/>
                         </PrivateRoute>
                         <Route exact path="/profile/:userId">
                             <Profile/>

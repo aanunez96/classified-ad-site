@@ -1,22 +1,38 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
 import React, {useState} from "react";
+import {gql, useMutation} from '@apollo/client';
+import {useHistory} from "react-router-dom";
 
+
+const UPDATE_USER = gql`
+mutation updateAd(
+  $userId: ID!
+  $name: String
+  $lastName: String
+  $number: Int
+){
+  modifyUser(
+    userId: $userId,
+    lastName: $lastName,
+    number: $number,
+    name: $name){
+    profile{
+      name
+      lastName
+      number
+    }
+  }
+}
+`;
 
 export default function UpdateProfile(props) {
     const {user} = props;
-    const [values, setValues] = useState({
-        firstName: user.profile.name,
-        lastName: user.profile.lastName,
-        email: user.emails[0].address,
-        phone: user.profile.number,
-    });
+    const history = useHistory();
+    const [updateUser, {data}] = useMutation(UPDATE_USER);
+    const [name, setName] = useState(user.profile.name);
+    const [lastName, setLastName] = useState(user.profile.lastName);
+    const [number, setNumber] = useState(parseInt(user.profile.number));
 
-    const handleChange = (event) => {
-        setValues({
-            ...values,
-            [event.target.name]: event.target.value
-        });
-    };
     return (
         <Grid
             item
@@ -48,10 +64,9 @@ export default function UpdateProfile(props) {
                                     fullWidth
                                     helperText="Please specify the first name"
                                     label="First name"
-                                    name="firstName"
-                                    onChange={handleChange}
+                                    onChange={event => setName(event.target.value)}
                                     required
-                                    value={values.firstName}
+                                    value={name}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -64,24 +79,9 @@ export default function UpdateProfile(props) {
                                     fullWidth
                                     label="Last name"
                                     name="lastName"
-                                    onChange={handleChange}
+                                    onChange={event => setLastName(event.target.value)}
                                     required
-                                    value={values.lastName}
-                                    variant="outlined"
-                                />
-                            </Grid>
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <TextField
-                                    fullWidth
-                                    label="Email Address"
-                                    name="email"
-                                    onChange={handleChange}
-                                    required
-                                    value={values.email}
+                                    value={lastName}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -94,9 +94,9 @@ export default function UpdateProfile(props) {
                                     fullWidth
                                     label="Phone Number"
                                     name="phone"
-                                    onChange={handleChange}
+                                    onChange={event => setNumber(event.target.value)}
                                     type="number"
-                                    value={values.phone}
+                                    value={number}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -111,6 +111,7 @@ export default function UpdateProfile(props) {
                         <Button
                             color="primary"
                             variant="contained"
+                            onClick={()=>updateUser({variables:{userId: user.id,name,lastName,number:parseInt(number)}})}
                         >
                             Save details
                         </Button>
