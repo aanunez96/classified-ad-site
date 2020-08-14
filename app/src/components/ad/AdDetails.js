@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
 export default function AdDetail(props) {
     const classes = useStyles();
     const {data} = props;
-    console.log(data);
     return (
         <Grid container spacing={3} className={classes.margin}>
             <Grid item xs={8} >

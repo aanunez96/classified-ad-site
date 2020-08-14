@@ -5,13 +5,12 @@ import UpdatePicture from '../../components/ad/UpdatePicture';
 import UpdateAd from '../../components/ad/UpdateAd';
 
 
-export default function CreateAd(props) {
-    const {user} = props;
+export default function CreateAd() {
     return (
         <Container component="main" maxWidth="md">
             <Grid container spacing={3}>
                 <UpdatePicture/>
-                <UpdateAd user={user}/>
+                <UpdateAd />
             </Grid>
         </Container>
 

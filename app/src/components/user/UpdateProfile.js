@@ -1,8 +1,9 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
-import React from "react";
+import React, {useContext} from "react";
 import {gql, useMutation} from '@apollo/client';
 import {useFormik} from "formik";
 import Alert from "@material-ui/lab/Alert/Alert";
+import {Context} from "../../utils/Store";
 
 const validate = values => {
     const errors = {};
@@ -38,8 +39,9 @@ mutation updateUser(
 }
 `;
 
-export default function UpdateProfile(props) {
-    const {user} = props;
+export default function UpdateProfile() {
+    const [state] = useContext(Context);
+    const user = state;
     const [updateUser] = useMutation(UPDATE_USER);
     const [invalidAuth, setInvalidAuth] = React.useState(false);
 

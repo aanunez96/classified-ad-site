@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
@@ -10,6 +10,7 @@ import Avatar from "@material-ui/core/Avatar";
 import {accountsClient} from "../../utils/accounts-js";
 import {useHistory, Link} from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar/AppBar";
+import {Context} from "../../utils/Store";
 
 
 const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
@@ -34,8 +35,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Header(props) {
-    const {user} = props;
+export default function Header() {
+    const [state, dispatch] = useContext(Context);
+    const user = state;
     const history = useHistory();
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -45,6 +47,9 @@ export default function Header(props) {
         try {
             await accountsClient.logout();
             setRedirect(true);
+            dispatch({
+                type: 'LOGOUT'
+            })
         } catch (e) {
             console.log(e);
         }
@@ -78,7 +83,7 @@ export default function Header(props) {
                     EZfy
                 </Typography>
 
-                <Button href={"/create-ad"} size="small">Add Ad</Button>
+                <Button component={Link} to={"/create-ad"} size="small">Add Ad</Button>
                 {
                     (user) ?
                         <div>
@@ -93,12 +98,12 @@ export default function Header(props) {
                                 open={Boolean(anchorEl)}
                                 onClose={handleClose}
                             >
-                                <MenuItem href="/edit-profile" onClick={handleClose}>Profile</MenuItem>
+                                <MenuItem component={Link} to="/edit-profile" onClick={handleClose}>Profile</MenuItem>
                                 <MenuItem onClick={logout}>Logout</MenuItem>
                             </Menu>
                         </div>
                         :
-                        <Button href="/login" variant="outlined" size="small">
+                        <Button component={Link} to={"/login"} variant="outlined" size="small">
                             Sign up
                         </Button>
                 }

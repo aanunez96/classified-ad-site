@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,6 +14,9 @@ import {useHistory} from "react-router-dom";
 import {accountsClient} from "../../utils/accounts-js";
 import {useFormik} from 'formik';
 import Alert from "@material-ui/lab/Alert/Alert";
+import {Context} from "../../utils/Store";
+import {Link as RouterLink} from "react-router-dom";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -86,6 +89,7 @@ mutation CreateUser(
 `;
 
 export default function SignUp() {
+    const [dispatch] = useContext(Context);
     const classes = useStyles();
     const history = useHistory();
     const [createUser] = useMutation(CREATE_USER);
@@ -102,6 +106,11 @@ export default function SignUp() {
                 }
             });
             await login(values.email,values.password);
+            const userInfoData = await accountsClient.getUser();
+            dispatch({
+                type: "GET_USER",
+                payload: userInfoData
+            });
             history.push("/");
         }catch (e) {
             setInvalidAuth(true);
@@ -225,7 +234,7 @@ export default function SignUp() {
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link href="/login" variant="body2">
+                            <Link component={RouterLink} href="/login" variant="body2">
                                 Already have an account? Sign in
                             </Link>
                         </Grid>

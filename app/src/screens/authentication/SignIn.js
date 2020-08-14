@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,9 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {accountsClient} from '../../utils/accounts-js';
-import {useHistory} from "react-router-dom";
+import {useHistory,Link as RouterLink} from "react-router-dom";
 import {useFormik} from 'formik';
 import Alert from '@material-ui/lab/Alert';
+import {Context} from "../../utils/Store";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,7 +58,7 @@ const validate = values => {
 };
 
 export default function SignIn() {
-
+    const [dispatch] = useContext(Context);
     const classes = useStyles();
     const history = useHistory();
     const [invalidAuth, setInvalidAuth] = React.useState(false);
@@ -68,6 +69,11 @@ export default function SignIn() {
                     email: values.email,
                 },
                 password: values.password,
+            });
+            const userInfoData = await accountsClient.getUser();
+            dispatch({
+                type: "GET_USER",
+                payload: userInfoData
             });
             history.push("/");
         }catch(error){
@@ -146,7 +152,7 @@ export default function SignIn() {
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link href="/sign-up" variant="body2">
+                            <Link component={RouterLink} to={"/sign-up"} variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>

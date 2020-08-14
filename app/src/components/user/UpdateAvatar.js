@@ -1,6 +1,7 @@
 import {Avatar, Box, Button, Card, CardActions, CardContent, Divider, Grid, Typography} from "@material-ui/core";
-import React from "react";
+import React, {useContext} from "react";
 import {makeStyles} from "@material-ui/core/styles";
+import {Context} from "../../utils/Store";
 const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
 
 const useStyles = makeStyles(() => ({
@@ -11,8 +12,9 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export default function UpdatePicture(props) {
-    const {user} = props;
+export default function UpdatePicture() {
+    const [state] = useContext(Context);
+    const user = state;
     const classes = useStyles();
 
     return (

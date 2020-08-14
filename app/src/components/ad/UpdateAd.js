@@ -1,5 +1,5 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -9,6 +9,7 @@ import {gql, useMutation} from '@apollo/client';
 import {useHistory} from "react-router-dom";
 import {useFormik} from "formik";
 import Alert from "@material-ui/lab/Alert/Alert";
+import {Context} from "../../utils/Store";
 
 const categories = ['car', 'motorcycle', 'property', 'cycle', 'clothing', 'watch', 'gadget', 'mobile'];
 
@@ -70,7 +71,9 @@ createAd(
 export default function UpdateAd(props) {
     const classes = useStyles();
     const history = useHistory();
-    const {ad, user} = props;
+    const [state] = useContext(Context);
+    const user = state;
+    const {ad} = props;
     const [updateAd, {data}] = useMutation((ad) ? UPDATE_AD : CREATE_AD);
     const [invalidAuth, setInvalidAuth] = useState(false);
 

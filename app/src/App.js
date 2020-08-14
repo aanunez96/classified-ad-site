@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import {
     BrowserRouter as Router,
     Switch,
@@ -18,8 +18,8 @@ import CreateAd from './screens/ad/CreateAd';
 import EditProfile from './screens/user/EditProfile';
 import Profile from './screens/user/Profile';
 import UpdateAdView from './screens/ad/UpdateAdView';
-import {accountsClient} from './utils/accounts-js';
 import Error from "./screens/Error";
+import {Context} from "./utils/Store";
 
 
 let theme = createMuiTheme({
@@ -179,25 +179,14 @@ function Copyright() {
 
 function App() {
     const classes = useStyles();
-    const [checkLogin, setCheckLogin] = React.useState(false);
-    const [user,setUser] = React.useState(null);
-    if(!checkLogin){
-        try{
-            accountsClient.getUser().then(e => {
-                setUser(e);
-                setCheckLogin(true);
-            });
-        }catch (e) {
-            console.log(e);
-        }
-    }
+    const [state] = useContext(Context);
+    const user = state;
 
     function PrivateRoute({ children, ...rest }) {
         return (
             <Route
                 {...rest}
                 render={({ location }) =>
-                    checkLogin  ?
                     user ? (
                         children
                     ) : (
@@ -207,9 +196,7 @@ function App() {
                                 state: { from: location }
                             }}
                         />
-                    ) : (
-                            <div></div>
-                        )
+                    )
                 }
             />
         );
@@ -218,7 +205,7 @@ function App() {
     return (
         <Router>
             <div className={classes.app}>
-                <Header user={user}/>
+                <Header />
                 <main className={classes.main}>
                     <Switch>
                         <Route exact path="/">
@@ -231,7 +218,7 @@ function App() {
                             <Category/>
                         </Route>
                         <PrivateRoute exact path="/create-ad/">
-                            <CreateAd user={user}/>
+                            <CreateAd />
                         </PrivateRoute>
                         <PrivateRoute exact path="/edit-ad/:adId">
                             <UpdateAdView/>
@@ -240,7 +227,7 @@ function App() {
                             <Profile/>
                         </Route>
                         <PrivateRoute exact path="/edit-profile">
-                            <EditProfile user={user}/>
+                            <EditProfile />
                         </PrivateRoute>
                         <Route exact path="/login">
                             <SingIn/>

@@ -14,6 +14,7 @@ import img from '../logo.svg';
 import {gql, useQuery} from "@apollo/client";
 import AdsList from '../components/ad/AdsList';
 import LinearProgress from "@material-ui/core/LinearProgress/LinearProgress";
+import {Link} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -122,7 +123,7 @@ export default function Home() {
                             <Grid container spacing={0} className={classes.container}>
                                 {data.categories.map(e =>
                                     <Grid key={e} item xs={3}>
-                                        <Button href={`/category/${e}`} className={classes.box}>
+                                        <Button component={Link} to={`/category/${e}`} className={classes.box}>
                                             <Paper className={classes.box}>
                                                 <Box
                                                     alignItems="center"
