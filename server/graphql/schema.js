@@ -1,11 +1,12 @@
-const {gql} = require('apollo-server-express');
+const {gql} = require('apollo-server');
 
 const typeDefs = gql`
+  
   type Query {
     ads(userId: ID, classification: Category, recently: Boolean): [Ad]
     ad(adId: ID!): Ad
     categories : [Category]
-    user(userId: ID): [User]
+    user(userId: ID): User
   }
     
   type Ad{
@@ -13,7 +14,7 @@ const typeDefs = gql`
     description: String
     tittle: String!
     owner: User!
-    classification: Category
+    classification: Category!
     price: Int!
     date:  String!
   }
@@ -42,7 +43,7 @@ const typeDefs = gql`
   }
   
   extend input CreateUserInput {
-      profile: CreateUserProfileInput!
+      profile: CreateUserProfileInput
   }
   
   input CreateUserProfileInput {
@@ -53,9 +54,11 @@ const typeDefs = gql`
   }
   
   type Mutation{
-    createAd(tittle: String!, owner: ID!, description: String, classification: Category!, price: Int!, date: String!):ID
+    createAd(tittle: String!, owner: ID!, description: String, classification: Category!, price: Int!): Ad!
     
-    modifyAd(tittle: String, adId: ID!, description: String, classification: Category, price: Int, date: String): ID
+    modifyAd(tittle: String, adId: ID!, description: String, classification: Category, price: Int): Ad!
+    
+    modifyUser(userId: ID!, lastName: String, avatar: String, number: Int, name: String): User  
   } 
 `;
 module.exports = typeDefs;

@@ -8,60 +8,73 @@ const resolvers = {
         categories: async () => {
             return ['car', 'motorcycle', 'property', 'cycle', 'clothing', 'watch', 'gadget', 'mobile'];
         },
-        ads: async (_, { userId, classification}) => {
+        ads: async (_, {userId, classification}) => {
             const query = {};
-            if (userId){
+            if (userId) {
                 query.owner = new ObjectID(userId);
             }
-            if(classification){
+            if (classification) {
                 query.classification = classification;
             }
             const ads = await Ad.find(query).exec();
-            return ads.map(e => ({... e._doc, owner: accountsServer.findUserById(e.owner)}));
+            return ads.map(e => ({...e._doc, owner: accountsServer.findUserById(e.owner)}));
         },
-        ad: async(_,{adId}) => {
+        ad: async (_, {adId}) => {
             const ad = await Ad.findById(new ObjectID(adId));
-            console.log({...ad._doc, owner: accountsServer.findUserById(ad.owner)});
             return {...ad._doc, owner: accountsServer.findUserById(ad.owner)};
         },
         user: async (_, {userId}) => {
-            let user = [];
-            if (userId) {
-                user = [accountsServer.findUserById(userId)];
-                user._id = user.id
-            } else {
-                mongoose.connection.db.collection('users', async function (_, collec) {
-                    user = collec.find({}).toArray();
-                });
-            }
+            const user = accountsServer.findUserById(userId);
+            user._id = user.id;
+
             return user
         }
     },
     Mutation: {
-        async createAd(_, {tittle, owner, description, classification, price, date}) {
+        async createAd(_, {tittle, owner, description, classification, price}) {
+            const date = new Date();
             const ad = new Ad({tittle, owner, description, classification, price, date});
             ad.save();
-            return ad.id;
+            return ad;
         },
-        async modifyAd(_, {tittle, adId, description, classification, price, date}){
+        async modifyAd(_, {tittle, adId, description, classification, price, date, urlImage}) {
             const ad = await Ad.findOne({_id: new ObjectID(adId)}).exec();
-            if(tittle){
+            if (tittle) {
                 ad.tittle = tittle;
             }
-            if(description){
+            if (description) {
                 ad.description = description;
             }
-            if(classification){
+            if (classification) {
                 ad.classification = classification;
             }
-            if(price){
+            if (price) {
                 ad.price = price;
             }
-            if(date){
+            if (date) {
                 ad.title = date;
             }
             ad.save();
-            return ad.id;
+            return ad;
+        },
+        async modifyUser(_, {userId, lastName, avatar, number, name}) {
+            const user = await accountsServer.findUserById(userId);
+            if(lastName){
+                user.profile.lastName = lastName
+            }
+            if(avatar){
+                user.profile.avatar = avatar
+            }
+            if(number){
+                user.profile.number = number
+            }
+            if(name){
+                user.profile.name = name
+            }
+            mongoose.connection.db.collection('users', async function (_, collec) {
+                collec.replaceOne({_id: new ObjectID(userId)}, user);
+            });
+            return user
         },
     }
 };
