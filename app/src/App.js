@@ -19,7 +19,7 @@ import EditProfile from './screens/user/EditProfile';
 import Profile from './screens/user/Profile';
 import UpdateAdView from './screens/ad/UpdateAdView';
 import {accountsClient} from './utils/accounts-js';
-
+import Error from "./screens/Error";
 
 
 let theme = createMuiTheme({
@@ -177,7 +177,7 @@ function Copyright() {
     );
 }
 
-function App(props) {
+function App() {
     const classes = useStyles();
     const [checkLogin, setCheckLogin] = React.useState(false);
     const [user,setUser] = React.useState(null);
@@ -247,6 +247,9 @@ function App(props) {
                         </Route>
                         <Route exact path="/sign-up">
                             <SingUp/>
+                        </Route>
+                        <Route path="*">
+                            <Error content={"Error 404 Page not found"}/>
                         </Route>
                     </Switch>
                 </main>
