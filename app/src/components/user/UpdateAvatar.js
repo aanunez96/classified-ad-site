@@ -1,7 +1,6 @@
 import {Avatar, Box, Button, Card, CardActions, CardContent, Divider, Grid, Typography} from "@material-ui/core";
 import React from "react";
 import {makeStyles} from "@material-ui/core/styles";
-import moment from 'moment';
 const image = 'https://image-us.samsung.com/SamsungUS/home/audio/galaxy-buds/MB-04-JustWhatYouWantV4.jpg?$cm-g-fb-full-bleed-img-mobile-jpg$';
 
 const useStyles = makeStyles(() => ({

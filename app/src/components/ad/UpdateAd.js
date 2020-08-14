@@ -7,6 +7,8 @@ import FormControl from '@material-ui/core/FormControl';
 import {makeStyles} from '@material-ui/core/styles';
 import {gql, useMutation} from '@apollo/client';
 import {useHistory} from "react-router-dom";
+import {useFormik} from "formik";
+import Alert from "@material-ui/lab/Alert/Alert";
 
 const categories = ['car', 'motorcycle', 'property', 'cycle', 'clothing', 'watch', 'gadget', 'mobile'];
 
@@ -17,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
     selectEmpty: {
         marginTop: theme.spacing(2),
     },
+    alert: {
+        margin: theme.spacing(1),
+    }
 }));
 
 
@@ -35,26 +40,96 @@ mutation updateAd(
     price: $price,
     classification:$classification
     ){
-    description
     classification
-    price
-    tittle
     _id
-    date
   }
 }
 `;
 
+
+const CREATE_AD = gql`
+mutation createAd(
+  $tittle: String!
+  $description: String
+  $price: Int!
+  $owner : ID!
+  $classification: Category!
+){
+createAd(
+  tittle: $tittle,
+  owner: $owner,
+  description: $description,
+  classification: $classification,
+  price: $price
+){
+  _id
+  classification
+ }
+}`;
+
 export default function UpdateAd(props) {
     const classes = useStyles();
     const history = useHistory();
-    const {ad} = props;
-    const [tittle, setTittle] = useState((ad) ? ad.tittle : "");
-    const [price, setPrice] = useState((ad) ? ad.price : "");
-    const [classification, setClassification] = useState((ad) ? ad.classification : "");
-    const [description, setDescription] = useState((ad) ? ad.description : "");
-    const [updateAd, {data}] = useMutation(UPDATE_AD);
-    data?.modifyAd && history.push(`/ad/${data.modifyAd.classification}/${data.modifyAd._id}`);
+    const {ad, user} = props;
+    const [updateAd, {data}] = useMutation((ad) ? UPDATE_AD : CREATE_AD);
+    const [invalidAuth, setInvalidAuth] = useState(false);
+
+    const validate = values => {
+        const errors = {};
+
+        if (!ad && !values.tittle) {
+            errors.tittle = 'Required';
+        } else if (values.tittle.length > 40) {
+            errors.tittle = 'Must be 40 characters or less';
+        }
+
+        if (!ad && !values.description) {
+            errors.description = 'Required';
+        } else if (values.description.length > 255) {
+            errors.description = 'Must be 255 characters or less';
+        }
+        if (!ad && !values.price) {
+            errors.price = 'Required';
+        }
+        if (!ad && !values.classification) {
+            errors.classification = 'Required';
+        }
+
+        return errors;
+    };
+    const modify = async ({tittle, description, price, classification}) => {
+        let variables = {
+            tittle,
+            description,
+            price,
+            classification
+        };
+        variables = (ad)? {...variables, adId:ad._id}: {...variables, owner:user.id};
+        try {
+            await updateAd({variables})
+        }catch (e) {
+            setInvalidAuth(true);
+        }
+    };
+
+    const formik = useFormik({
+        initialValues: {
+            tittle: (ad) ? ad.tittle : "",
+            description: (ad) ? ad.description : "",
+            price: (ad) ? ad.price : "",
+            classification: (ad) ? ad.classification : "",
+        },
+        validate,
+        onSubmit: async values => modify({
+            tittle: values.tittle,
+            description: values.description,
+            price: values.price,
+            classification: values.classification
+        }),
+    });
+
+    (data?.modifyAd || data?.createAd) && history.push(`/ad/${(ad) ? data.modifyAd.classification : data.createAd.classification}/${(ad) ? data.modifyAd._id : data.createAd._id}`);
+
 
     return (
         <Grid
@@ -63,9 +138,11 @@ export default function UpdateAd(props) {
             md={6}
             xs={12}
         >
+            {invalidAuth &&
+            <Alert  severity="error">Something has gone wrong try again</Alert>
+            }
             <form
-                autoComplete="off"
-                noValidate
+                onSubmit={formik.handleSubmit}
             >
                 <Card>
                     <CardHeader
@@ -86,11 +163,15 @@ export default function UpdateAd(props) {
                                     fullWidth
                                     label="Tittle"
                                     name="tittle"
-                                    onChange={e => setTittle(e.target.value)}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.tittle}
                                     required
-                                    value={tittle}
                                     variant="outlined"
                                 />
+                                {formik.touched.tittle && formik.errors.tittle ? (
+                                    <Alert className={classes.alert} severity="error">{formik.errors.tittle}</Alert>
+                                ) : null}
                             </Grid>
                             <Grid
                                 item
@@ -102,11 +183,15 @@ export default function UpdateAd(props) {
                                     label="Price"
                                     name="price"
                                     type="number"
-                                    onChange={e => setPrice(e.target.value)}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.price}
                                     required
-                                    value={price}
                                     variant="outlined"
                                 />
+                                {formik.touched.price && formik.errors.price ? (
+                                    <Alert className={classes.alert} severity="error">{formik.errors.price}</Alert>
+                                ) : null}
                             </Grid>
                             <Grid
                                 item
@@ -118,23 +203,29 @@ export default function UpdateAd(props) {
 
                                     <Select
                                         labelId="select-outlined"
-                                        name="category"
+                                        name="classification"
                                         required
-                                        value={classification}
-                                        onChange={e => setClassification(e.target.value)}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.classification}
                                         label="Category"
                                     >
                                         <MenuItem value="">
                                             <em>None</em>
                                         </MenuItem>
                                         {categories.map(e =>
-                                            <MenuItem value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</MenuItem>
+                                            <MenuItem key={e}
+                                                      value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</MenuItem>
                                         )}
 
                                         <MenuItem value={20}>Twenty</MenuItem>
                                         <MenuItem value={30}>Thirty</MenuItem>
                                     </Select>
                                 </FormControl>
+                                {formik.touched.classification && formik.errors.classification ? (
+                                    <Alert className={classes.alert}
+                                           severity="error">{formik.errors.classification}</Alert>
+                                ) : null}
                             </Grid>
                             <Grid
                                 item
@@ -144,11 +235,16 @@ export default function UpdateAd(props) {
                                     fullWidth
                                     label="Description"
                                     name="description"
-                                    onChange={e => setDescription(e.target.value)}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.description}
                                     multiline
-                                    value={description}
                                     variant="outlined"
                                 />
+                                {formik.touched.description && formik.errors.description ? (
+                                    <Alert className={classes.alert}
+                                           severity="error">{formik.errors.description}</Alert>
+                                ) : null}
                             </Grid>
                         </Grid>
                     </CardContent>
@@ -161,7 +257,7 @@ export default function UpdateAd(props) {
                         <Button
                             color="primary"
                             variant="contained"
-                            onClick={()=>updateAd({variables:{adId:ad._id,tittle,description,price,classification}})}
+                            type="submit"
                         >
                             Save details
                         </Button>

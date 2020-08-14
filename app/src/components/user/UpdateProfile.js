@@ -1,11 +1,24 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
-import React, {useState} from "react";
+import React from "react";
 import {gql, useMutation} from '@apollo/client';
-import {useHistory} from "react-router-dom";
+import {useFormik} from "formik";
+import Alert from "@material-ui/lab/Alert/Alert";
 
+const validate = values => {
+    const errors = {};
 
+    if (values.name.length > 15) {
+        errors.name = 'Must be 15 characters or less';
+    }
+
+    if (values.lastName.length > 20) {
+        errors.lastName = 'Must be 20 characters or less';
+    }
+
+    return errors;
+};
 const UPDATE_USER = gql`
-mutation updateAd(
+mutation updateUser(
   $userId: ID!
   $name: String
   $lastName: String
@@ -27,11 +40,32 @@ mutation updateAd(
 
 export default function UpdateProfile(props) {
     const {user} = props;
-    const history = useHistory();
-    const [updateUser, {data}] = useMutation(UPDATE_USER);
-    const [name, setName] = useState(user.profile.name);
-    const [lastName, setLastName] = useState(user.profile.lastName);
-    const [number, setNumber] = useState(parseInt(user.profile.number));
+    const [updateUser] = useMutation(UPDATE_USER);
+    const [invalidAuth, setInvalidAuth] = React.useState(false);
+
+    const update = async (values) => {
+        try {
+            await updateUser({
+                variables: {
+                    userId: user.id,
+                    name: values.name,
+                    lastName: values.lastName,
+                    number: values.number
+                }
+            })
+        }catch (e) {
+            setInvalidAuth(true);
+        }
+    };
+    const formik = useFormik({
+        initialValues: {
+            number: parseInt(user.profile.number),
+            name: user.profile.name,
+            lastName: user.profile.lastName,
+        },
+        validate,
+        onSubmit: async values => update(values),
+    });
 
     return (
         <Grid
@@ -40,16 +74,18 @@ export default function UpdateProfile(props) {
             md={6}
             xs={12}
         >
-            <form
-                autoComplete="off"
-                noValidate
-            >
+            {invalidAuth &&
+            <Alert  severity="error">Something has gone wrong try again</Alert>
+            }
+
+            <form onSubmit={formik.handleSubmit}>
                 <Card>
                     <CardHeader
                         subheader="The information can be edited"
                         title="Profile"
                     />
                     <Divider/>
+
                     <CardContent>
                         <Grid
                             container
@@ -64,11 +100,14 @@ export default function UpdateProfile(props) {
                                     fullWidth
                                     helperText="Please specify the first name"
                                     label="First name"
-                                    onChange={event => setName(event.target.value)}
-                                    required
-                                    value={name}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.name}
                                     variant="outlined"
                                 />
+                                {formik.touched.name && formik.errors.name ? (
+                                    <Alert severity="error">{formik.errors.name}</Alert>
+                                ) : null}
                             </Grid>
                             <Grid
                                 item
@@ -79,11 +118,14 @@ export default function UpdateProfile(props) {
                                     fullWidth
                                     label="Last name"
                                     name="lastName"
-                                    onChange={event => setLastName(event.target.value)}
-                                    required
-                                    value={lastName}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.lastName}
                                     variant="outlined"
                                 />
+                                {formik.touched.lastName && formik.errors.lastName ? (
+                                    <Alert severity="error">{formik.errors.lastName}</Alert>
+                                ) : null}
                             </Grid>
                             <Grid
                                 item
@@ -93,10 +135,9 @@ export default function UpdateProfile(props) {
                                 <TextField
                                     fullWidth
                                     label="Phone Number"
-                                    name="phone"
-                                    onChange={event => setNumber(event.target.value)}
-                                    type="number"
-                                    value={number}
+                                    name="number"
+                                    onChange={formik.handleChange}
+                                    value={formik.values.number} type="number"
                                     variant="outlined"
                                 />
                             </Grid>
@@ -111,7 +152,7 @@ export default function UpdateProfile(props) {
                         <Button
                             color="primary"
                             variant="contained"
-                            onClick={()=>updateUser({variables:{userId: user.id,name,lastName,number:parseInt(number)}})}
+                            type="submit"
                         >
                             Save details
                         </Button>

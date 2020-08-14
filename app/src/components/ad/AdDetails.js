@@ -43,7 +43,7 @@ export default function AdDetail(props) {
         <Grid container spacing={3} className={classes.margin}>
             <Grid item xs={8} >
                 <div height="200" display="flex" >
-                <img src={image}  className={classes.img} alt="ad-image" />
+                <img src={image}  className={classes.img} alt="ad" />
                 </div>
             </Grid>
             <Grid item xs={4}>
@@ -61,7 +61,7 @@ export default function AdDetail(props) {
                     component={Link} to={`/profile/${data.owner._id}`}
                 >
                     <Avatar variant="rounded" className={classes.rounded} >
-                        <img src={image}  className={classes.img} alt="ad-image" />
+                        <img src={image}  className={classes.img}  alt="avatar"/>
                     </Avatar>
                     <Box
                         alignItems="left"

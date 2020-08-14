@@ -9,7 +9,7 @@ import Home from './screens/Home';
 import Header from './components/themes/Header2';
 import SingUp from './screens/authentication/SignUp';
 import SingIn from './screens/authentication/SignIn';
-import {withStyles, createMuiTheme} from '@material-ui/core/styles';
+import {makeStyles, createMuiTheme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Ad from './screens/ad/Ad';
@@ -19,6 +19,7 @@ import EditProfile from './screens/user/EditProfile';
 import Profile from './screens/user/Profile';
 import UpdateAdView from './screens/ad/UpdateAdView';
 import {accountsClient} from './utils/accounts-js';
+
 
 
 let theme = createMuiTheme({
@@ -133,7 +134,7 @@ theme = {
 
 const drawerWidth = 256;
 
-const styles = {
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         minHeight: '100vh',
@@ -161,7 +162,7 @@ const styles = {
         padding: theme.spacing(2),
         background: '#eaeff1',
     },
-};
+}));
 
 function Copyright() {
     return (
@@ -177,7 +178,7 @@ function Copyright() {
 }
 
 function App(props) {
-    const {classes} = props;
+    const classes = useStyles();
     const [checkLogin, setCheckLogin] = React.useState(false);
     const [user,setUser] = React.useState(null);
     if(!checkLogin){
@@ -230,7 +231,7 @@ function App(props) {
                             <Category/>
                         </Route>
                         <PrivateRoute exact path="/create-ad/">
-                            <CreateAd/>
+                            <CreateAd user={user}/>
                         </PrivateRoute>
                         <PrivateRoute exact path="/edit-ad/:adId">
                             <UpdateAdView/>
@@ -257,4 +258,4 @@ function App(props) {
     );
 }
 
-export default withStyles(styles)(App);
+export default App;

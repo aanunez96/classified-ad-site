@@ -94,8 +94,10 @@ export default function Home() {
                     EzFy
                 </Typography>
                 <Typography component={"p"} variant={"body1"} className={classes.secondaryHeading}>
-                    🎁Buy and sell everything from used cars to mobile phones and computers, or search for property and
+                   <span>
+                       Buy and sell everything from used cars to mobile phones and computers, or search for property and
                     more around the world. It's so easyfy!!!!!
+                   </span>
                 </Typography>
             </Container>
 
@@ -119,7 +121,7 @@ export default function Home() {
                         (data?.categories) ?
                             <Grid container spacing={0} className={classes.container}>
                                 {data.categories.map(e =>
-                                    <Grid item xs={3}>
+                                    <Grid key={e} item xs={3}>
                                         <Button href={`/category/${e}`} className={classes.box}>
                                             <Paper className={classes.box}>
                                                 <Box
@@ -148,11 +150,13 @@ export default function Home() {
                     }
                 </div>
             </Container>
+
+            {data?.ads &&
             <Container component="main" maxWidth="lg">
-                {data?.ads &&
                 <AdsList tittle={"Recent Posts"} data={data.ads}/>
-                }
             </Container>
+
+            }
         </>
     );
 }

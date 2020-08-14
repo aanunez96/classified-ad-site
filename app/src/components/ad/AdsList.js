@@ -16,7 +16,7 @@ export default function AdsList(props) {
             < Grid container spacing={2}>
                 {
                     data.map(e =>
-                        <Grid item xs={3}>
+                        <Grid key={e._id} item xs={3}>
                             <CardAd data={e} owner={(owner)?true:false}/>
                         </Grid>
                     )

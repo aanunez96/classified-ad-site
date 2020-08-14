@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Grid} from '@material-ui/core';
 import Container from "@material-ui/core/Container";
 import UpdateProfile from '../../components/user/UpdateProfile';
@@ -30,10 +30,10 @@ export default function EditProfile(props) {
                 spacing={3}
             >
                 <UpdateAvatar user={user}/>
-                <UpdateProfile user={user} owner={true}/>
+                <UpdateProfile user={user} />
             </Grid>
             <br/>
-            {(data?.ads && data.ads.length !== 0) && <AdsList data={data.ads} tittle={"Published"}/>}
+            {(data?.ads && data.ads.length !== 0) && <AdsList data={data.ads} owner={true} tittle={"Published"}/>}
         </Container>
 
     );

@@ -12,7 +12,8 @@ import Container from '@material-ui/core/Container';
 import {gql, useMutation} from '@apollo/client';
 import {useHistory} from "react-router-dom";
 import {accountsClient} from "../../utils/accounts-js";
-
+import {useFormik} from 'formik';
+import Alert from "@material-ui/lab/Alert/Alert";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +34,35 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    alert: {
+        margin: theme.spacing(1),
+    }
 }));
+const validate = values => {
+    const errors = {};
+
+    if (values.name.length > 15) {
+        errors.name = 'Must be 15 characters or less';
+    }
+
+    if (values.lastName.length > 20) {
+        errors.lastName = 'Must be 20 characters or less';
+    }
+
+    if (!values.email) {
+        errors.email = 'Required';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+        errors.email = 'Invalid email address';
+    }
+
+    if (!values.password) {
+        errors.password = 'Required';
+    } else if (values.password.length < 6) {
+        errors.password = 'Must be 8 characters or more';
+    }
+
+    return errors;
+};
 
 const CREATE_USER = gql`
 mutation CreateUser(
@@ -59,22 +88,27 @@ mutation CreateUser(
 export default function SignUp() {
     const classes = useStyles();
     const history = useHistory();
-    const [createUser, {data}] = useMutation(CREATE_USER);
-    const [name, setName] = React.useState("");
-    const [lastName, setLastName] = React.useState("");
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const create = () => {
-        createUser({
-            variables: {
-                email,
-                password,
-                name,
-                lastName
-            }
-        }).then(e => login().then(history.push("/"))).catch(err => console.log(err));
+    const [createUser] = useMutation(CREATE_USER);
+    const [invalidAuth, setInvalidAuth] = React.useState(false);
+
+    const create = async (values) => {
+        try {
+            await createUser({
+                variables: {
+                    email: values.email,
+                    password: values.password,
+                    name: values.name,
+                    lastName: values.lastName,
+                }
+            });
+            await login(values.email,values.password);
+            history.push("/");
+        }catch (e) {
+            setInvalidAuth(true);
+        }
     };
-    const login = async () => {
+
+    const login = async (email,password) => {
         await accountsClient.loginWithService('password', {
             user: {
                 email: email,
@@ -82,7 +116,16 @@ export default function SignUp() {
             password: password,
         });
     };
-
+    const formik = useFormik({
+        initialValues: {
+            password: '',
+            email: '',
+            name: '',
+            lastName: '',
+        },
+        validate,
+        onSubmit: async values => create(values),
+    });
 
 
     return (
@@ -95,77 +138,99 @@ export default function SignUp() {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            autoComplete="fname"
-                            name="firstName"
-                            variant="outlined"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            fullWidth
-                            id="firstName"
-                            label="First Name"
-                            autoFocus
-                        />
+
+                {invalidAuth &&
+                <Alert className={classes.alert} severity="error">Your credentials are invalid try other</Alert>
+                }
+
+                <form onSubmit={formik.handleSubmit} className={classes.form}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                autoComplete="fname"
+                                name="name"
+                                variant="outlined"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.name}
+                                fullWidth
+                                id="name"
+                                label="First Name"
+                                autoFocus
+                            />
+                            {formik.touched.name && formik.errors.name ? (
+                                <Alert className={classes.alert} severity="error">{formik.errors.name}</Alert>
+                            ) : null}
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.lastName}
+                                id="lastName"
+                                label="Last Name"
+                                name="lastName"
+                                autoComplete="lname"
+                            />
+                            {formik.touched.lastName && formik.errors.lastName ? (
+                                <Alert className={classes.alert} severity="error">{formik.errors.lastName}</Alert>
+                            ) : null}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.email}
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                            />
+                            {formik.touched.email && formik.errors.email ? (
+                                <Alert className={classes.alert} severity="error">{formik.errors.email}</Alert>
+                            ) : null}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.password}
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                            />
+                            {formik.touched.password && formik.errors.password ? (
+                                <Alert className={classes.alert} severity="error">{formik.errors.password}</Alert>
+                            ) : null}
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            id="lastName"
-                            label="Last Name"
-                            name="lastName"
-                            autoComplete="lname"
-                        />
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        type="submit"
+                    >
+                        Sign Up
+                    </Button>
+                    <Grid container justify="flex-end">
+                        <Grid item>
+                            <Link href="/login" variant="body2">
+                                Already have an account? Sign in
+                            </Link>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                    </Grid>
-                </Grid>
-                <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    onClick={create}
-                >
-                    Sign Up
-                </Button>
-                <Grid container justify="flex-end">
-                    <Grid item>
-                        <Link href="/login" variant="body2">
-                            Already have an account? Sign in
-                        </Link>
-                    </Grid>
-                </Grid>
+                </form>
             </div>
         </Container>
     );
