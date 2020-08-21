@@ -12,7 +12,7 @@ import Button from "@material-ui/core/Button";
 import {Box} from "@material-ui/core";
 import img from '../logo.svg';
 import {gql, useQuery} from "@apollo/client";
-import AdsList from '../components/ad/AdsList';
+import AdsList from '../components/ad/list/AdsList';
 import LinearProgress from "@material-ui/core/LinearProgress/LinearProgress";
 import {Link} from "react-router-dom";
 
@@ -152,12 +152,10 @@ export default function Home() {
                 </div>
             </Container>
 
-            {data?.ads &&
             <Container component="main" maxWidth="lg">
-                <AdsList tittle={"Recent Posts"} data={data.ads}/>
+                <AdsList tittle={"Recent Posts"} />
             </Container>
 
-            }
         </>
     );
 }

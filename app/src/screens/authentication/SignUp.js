@@ -89,7 +89,7 @@ mutation CreateUser(
 `;
 
 export default function SignUp() {
-    const [dispatch] = useContext(Context);
+    const [,dispatch] = useContext(Context);
     const classes = useStyles();
     const history = useHistory();
     const [createUser] = useMutation(CREATE_USER);

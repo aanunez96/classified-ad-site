@@ -1,15 +1,15 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import {makeStyles} from '@material-ui/core/styles';
-import {gql, useMutation} from '@apollo/client';
 import {useHistory} from "react-router-dom";
 import {useFormik} from "formik";
 import Alert from "@material-ui/lab/Alert/Alert";
-import {Context} from "../../utils/Store";
+import useUpdateAd from './useUpdateAd'
+import LinearProgress from "@material-ui/core/LinearProgress/LinearProgress";
 
 const categories = ['car', 'motorcycle', 'property', 'cycle', 'clothing', 'watch', 'gadget', 'mobile'];
 
@@ -25,102 +25,44 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
-const UPDATE_AD = gql`
-mutation updateAd(
-  $adId: ID!
-  $tittle: String
-  $description: String
-  $classification: Category
-  $price: Int
-){
-  modifyAd(
-    tittle: $tittle,
-    adId: $adId,
-    description: $description,
-    price: $price,
-    classification:$classification
-    ){
-    classification
-    _id
-  }
-}
-`;
-
-
-const CREATE_AD = gql`
-mutation createAd(
-  $tittle: String!
-  $description: String
-  $price: Int!
-  $owner : ID!
-  $classification: Category!
-){
-createAd(
-  tittle: $tittle,
-  owner: $owner,
-  description: $description,
-  classification: $classification,
-  price: $price
-){
-  _id
-  classification
- }
-}`;
-
 export default function UpdateAd(props) {
     const classes = useStyles();
     const history = useHistory();
-    const [state] = useContext(Context);
-    const user = state;
-    const {ad} = props;
-    const [updateAd, {data}] = useMutation((ad) ? UPDATE_AD : CREATE_AD);
+    const {adId} = props;
+    const [loading, ad, modify, data] = useUpdateAd(adId);
     const [invalidAuth, setInvalidAuth] = useState(false);
+    const [flagData, setFlagData] = useState((adId)? false: true);
 
     const validate = values => {
         const errors = {};
 
-        if (!ad && !values.tittle) {
+        if (!adId && !values.tittle) {
             errors.tittle = 'Required';
         } else if (values.tittle.length > 40) {
             errors.tittle = 'Must be 40 characters or less';
         }
 
-        if (!ad && !values.description) {
+        if (!adId && !values.description) {
             errors.description = 'Required';
         } else if (values.description.length > 255) {
             errors.description = 'Must be 255 characters or less';
         }
-        if (!ad && !values.price) {
+        if (!adId && !values.price) {
             errors.price = 'Required';
         }
-        if (!ad && !values.classification) {
+        if (!adId && !values.classification) {
             errors.classification = 'Required';
         }
 
         return errors;
     };
-    const modify = async ({tittle, description, price, classification}) => {
-        let variables = {
-            tittle,
-            description,
-            price,
-            classification
-        };
-        variables = (ad)? {...variables, adId:ad._id}: {...variables, owner:user.id};
-        try {
-            await updateAd({variables})
-        }catch (e) {
-            setInvalidAuth(true);
-        }
-    };
 
     const formik = useFormik({
         initialValues: {
-            tittle: (ad) ? ad.tittle : "",
-            description: (ad) ? ad.description : "",
-            price: (ad) ? ad.price : "",
-            classification: (ad) ? ad.classification : "",
+            tittle: "",
+            description: "",
+            price: "",
+            classification: "",
         },
         validate,
         onSubmit: async values => modify({
@@ -128,10 +70,19 @@ export default function UpdateAd(props) {
             description: values.description,
             price: values.price,
             classification: values.classification
-        }),
+        }, setInvalidAuth),
     });
+    const updateField = (ad) => {
+        formik.setFieldValue("tittle", ad.tittle);
+        formik.setFieldValue("description", ad.description);
+        formik.setFieldValue("price", ad.price);
+        formik.setFieldValue("classification", ad.classification);
+        setFlagData(true);
+    };
 
-    (data?.modifyAd || data?.createAd) && history.push(`/ad/${(ad) ? data.modifyAd.classification : data.createAd.classification}/${(ad) ? data.modifyAd._id : data.createAd._id}`);
+    (!flagData && ad) && updateField(ad);
+
+    (data) && history.push(`/ad/${data.classification}/${data._id}`);
 
 
     return (
@@ -141,8 +92,14 @@ export default function UpdateAd(props) {
             md={6}
             xs={12}
         >
+            {loading &&
+            <>
+                <LinearProgress/>
+                <br/>
+            </>
+            }
             {invalidAuth &&
-            <Alert  severity="error">Something has gone wrong try again</Alert>
+            <Alert severity="error">Something has gone wrong try again</Alert>
             }
             <form
                 onSubmit={formik.handleSubmit}

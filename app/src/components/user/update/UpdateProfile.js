@@ -1,9 +1,9 @@
 import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField} from "@material-ui/core";
 import React, {useContext} from "react";
-import {gql, useMutation} from '@apollo/client';
 import {useFormik} from "formik";
 import Alert from "@material-ui/lab/Alert/Alert";
-import {Context} from "../../utils/Store";
+import {Context} from "../../../utils/Store";
+import useUpdateProfile from './useUpdateProfile';
 
 const validate = values => {
     const errors = {};
@@ -18,47 +18,13 @@ const validate = values => {
 
     return errors;
 };
-const UPDATE_USER = gql`
-mutation updateUser(
-  $userId: ID!
-  $name: String
-  $lastName: String
-  $number: Int
-){
-  modifyUser(
-    userId: $userId,
-    lastName: $lastName,
-    number: $number,
-    name: $name){
-    profile{
-      name
-      lastName
-      number
-    }
-  }
-}
-`;
+
 
 export default function UpdateProfile() {
-    const [state] = useContext(Context);
-    const user = state;
-    const [updateUser] = useMutation(UPDATE_USER);
+    const [user] = useContext(Context);
+    const update = useUpdateProfile();
     const [invalidAuth, setInvalidAuth] = React.useState(false);
 
-    const update = async (values) => {
-        try {
-            await updateUser({
-                variables: {
-                    userId: user.id,
-                    name: values.name,
-                    lastName: values.lastName,
-                    number: values.number
-                }
-            })
-        }catch (e) {
-            setInvalidAuth(true);
-        }
-    };
     const formik = useFormik({
         initialValues: {
             number: parseInt(user.profile.number),
@@ -66,38 +32,23 @@ export default function UpdateProfile() {
             lastName: user.profile.lastName,
         },
         validate,
-        onSubmit: async values => update(values),
+        onSubmit: async values => update(values,setInvalidAuth),
     });
 
     return (
-        <Grid
-            item
-            lg={8}
-            md={6}
-            xs={12}
-        >
+        <Grid item lg={8} md={6} xs={12}>
             {invalidAuth &&
             <Alert  severity="error">Something has gone wrong try again</Alert>
             }
 
             <form onSubmit={formik.handleSubmit}>
                 <Card>
-                    <CardHeader
-                        subheader="The information can be edited"
-                        title="Profile"
-                    />
+                    <CardHeader subheader="The information can be edited" title="Profile"/>
                     <Divider/>
 
                     <CardContent>
-                        <Grid
-                            container
-                            spacing={3}
-                        >
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
+                        <Grid container spacing={3}>
+                            <Grid item md={6} xs={12}>
                                 <TextField
                                     fullWidth
                                     helperText="Please specify the first name"
@@ -111,11 +62,7 @@ export default function UpdateProfile() {
                                     <Alert severity="error">{formik.errors.name}</Alert>
                                 ) : null}
                             </Grid>
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
+                            <Grid item md={6} xs={12}>
                                 <TextField
                                     fullWidth
                                     label="Last name"
@@ -129,11 +76,7 @@ export default function UpdateProfile() {
                                     <Alert severity="error">{formik.errors.lastName}</Alert>
                                 ) : null}
                             </Grid>
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
+                            <Grid item md={6} xs={12}>
                                 <TextField
                                     fullWidth
                                     label="Phone Number"
@@ -146,16 +89,8 @@ export default function UpdateProfile() {
                         </Grid>
                     </CardContent>
                     <Divider/>
-                    <Box
-                        display="flex"
-                        justifyContent="flex-end"
-                        p={2}
-                    >
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            type="submit"
-                        >
+                    <Box display="flex" justifyContent="flex-end" p={2}>
+                        <Button color="primary" variant="contained" type="submit">
                             Save details
                         </Button>
                     </Box>

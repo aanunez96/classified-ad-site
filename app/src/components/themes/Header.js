@@ -66,7 +66,6 @@ export default function Header() {
 
     const handleClose = () => {
         setAnchorEl(null);
-        history.push('/edit-profile')
     };
 
     return (

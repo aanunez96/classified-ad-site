@@ -58,7 +58,7 @@ const validate = values => {
 };
 
 export default function SignIn() {
-    const [dispatch] = useContext(Context);
+    const [, dispatch] = useContext(Context);
     const classes = useStyles();
     const history = useHistory();
     const [invalidAuth, setInvalidAuth] = React.useState(false);
@@ -77,6 +77,7 @@ export default function SignIn() {
             });
             history.push("/");
         }catch(error){
+            console.log(error);
             setInvalidAuth(true);
         }
 

@@ -15,7 +15,7 @@ const Reducer = (state, action) => {
 };
 
 const Store = ({children}) => {
-    const [state, dispatch] = useReducer(Reducer, null);
+    const [state, dispatch] = useReducer(Reducer, "undefined");
 
     const fetchAuthenticatedUser = async () => {
         try {

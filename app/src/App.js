@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, {useContext} from 'react';
 import {
     BrowserRouter as Router,
     Switch,
@@ -6,7 +6,7 @@ import {
     Redirect,
 } from "react-router-dom";
 import Home from './screens/Home';
-import Header from './components/themes/Header2';
+import Header from './components/themes/Header';
 import SingUp from './screens/authentication/SignUp';
 import SingIn from './screens/authentication/SignIn';
 import {makeStyles, createMuiTheme} from '@material-ui/core/styles';
@@ -20,6 +20,7 @@ import Profile from './screens/user/Profile';
 import UpdateAdView from './screens/ad/UpdateAdView';
 import Error from "./screens/Error";
 import {Context} from "./utils/Store";
+import LinearProgress from "@material-ui/core/LinearProgress/LinearProgress";
 
 
 let theme = createMuiTheme({
@@ -135,10 +136,6 @@ theme = {
 const drawerWidth = 256;
 
 const useStyles = makeStyles(() => ({
-    root: {
-        display: 'flex',
-        minHeight: '100vh',
-    },
     drawer: {
         [theme.breakpoints.up('sm')]: {
             width: drawerWidth,
@@ -149,6 +146,7 @@ const useStyles = makeStyles(() => ({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
+        minHeight: '100vh'
     },
     main: {
         flex: 1,
@@ -179,24 +177,26 @@ function Copyright() {
 
 function App() {
     const classes = useStyles();
-    const [state] = useContext(Context);
-    const user = state;
+    const [user] = useContext(Context);
 
-    function PrivateRoute({ children, ...rest }) {
+    function PrivateRoute({children, ...rest}) {
         return (
             <Route
                 {...rest}
-                render={({ location }) =>
-                    user ? (
-                        children
-                    ) : (
-                        <Redirect
-                            to={{
-                                pathname: "/login",
-                                state: { from: location }
-                            }}
-                        />
-                    )
+                render={({location}) =>
+                    user === "undefined" ?
+                        <LinearProgress/>
+                        :
+                        user ? (
+                            children
+                        ) : (
+                            <Redirect
+                                to={{
+                                    pathname: "/login",
+                                    state: {from: location}
+                                }}
+                            />
+                        )
                 }
             />
         );
@@ -205,7 +205,7 @@ function App() {
     return (
         <Router>
             <div className={classes.app}>
-                <Header />
+                <Header/>
                 <main className={classes.main}>
                     <Switch>
                         <Route exact path="/">
@@ -218,7 +218,7 @@ function App() {
                             <Category/>
                         </Route>
                         <PrivateRoute exact path="/create-ad/">
-                            <CreateAd />
+                            <CreateAd/>
                         </PrivateRoute>
                         <PrivateRoute exact path="/edit-ad/:adId">
                             <UpdateAdView/>
@@ -227,7 +227,7 @@ function App() {
                             <Profile/>
                         </Route>
                         <PrivateRoute exact path="/edit-profile">
-                            <EditProfile />
+                            <EditProfile/>
                         </PrivateRoute>
                         <Route exact path="/login">
                             <SingIn/>
