@@ -5,7 +5,15 @@ _the concept is to create a basic classified ad site using **react.js**, **apoll
 ## Installation
 To install this project you simply need to have [docker-compose](https://docs.docker.com/compose/install/) installed then clone this and run:
 ```bash
-docker-compose up 
+docker-compose up -d
+```
+Install express dependencies 
+```bash
+docker exec -it poc-express yarn install
+```
+Install react dependencies 
+```bash
+docker exec -it poc-react yarn install
 ```
 To run the server:
 ```bash
